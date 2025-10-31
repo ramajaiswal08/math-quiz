@@ -7,6 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Trophy, Flame, Star, LogOut, Play } from "lucide-react";
 import { toast } from "sonner";
+import bg from "@/assets/bg.jpg";
+import bg2 from "@/assets/bg2.jpg";
+import "./../math-bg.css"; 
 
 interface Profile {
   username: string;
@@ -57,6 +60,7 @@ const Dashboard = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
+
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
@@ -64,11 +68,8 @@ const Dashboard = () => {
       .eq("id", userId)
       .single();
 
-    if (error) {
-      toast.error("Failed to load profile");
-    } else {
-      setProfile(data);
-    }
+    if (error) toast.error("Failed to load profile");
+    else setProfile(data);
   };
 
   const fetchQuizzes = async () => {
@@ -77,17 +78,14 @@ const Dashboard = () => {
       .select("*")
       .order("difficulty");
 
-    if (error) {
-      toast.error("Failed to load quizzes");
-    } else {
-      setQuizzes(data || []);
-    }
+    if (error) toast.error("Failed to load quizzes");
+    else setQuizzes(data || []);
   };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     toast.success("Logged out successfully");
-    navigate("/auth");
+    navigate("/");
   };
 
   const getDifficultyColor = (difficulty: string) => {
@@ -108,8 +106,25 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-light via-background to-secondary p-4">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="relative min-h-screen p-4 overflow-hidden">
+
+      
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-10"
+        style={{ backgroundImage: `url(${bg})` }}
+      ></div>
+
+      {/* ✅ Floating Math Icons */}
+      <div className="absolute inset-0 pointer-events-none math-floating-icons">
+        <span className="math-icon">➕</span>
+        <span className="math-icon">➖</span>
+        {/* <span className="math-icon">✖️</span>
+        <span className="math-icon">➗</span> */}
+      </div>
+
+      {/* ✅ ACTUAL CONTENT */}
+      <div className="relative max-w-6xl mx-auto space-y-6">
+
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
@@ -124,92 +139,127 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-primary to-primary-dark text-primary-foreground border-0 shadow-lg">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Star className="w-5 h-5" />
-                Total Points
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold">{profile?.total_points || 0}</p>
-            </CardContent>
-          </Card>
+        {/* Math Themed Progress Card */}
+<Card className="relative overflow-hidden rounded-3xl shadow-xl border-0 bg-gradient-to-br from-blue-50 via-white to-purple-50">
 
-          <Card className="bg-gradient-to-br from-accent to-secondary text-accent-foreground border-0 shadow-lg">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Flame className="w-5 h-5" />
-                Current Streak
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold">{profile?.current_streak || 0} days</p>
-            </CardContent>
-          </Card>
+  {/* ✅ Floating Math Symbols */}
+  {/* <div className="absolute top-4 right-80 text-4xl text-purple-300/40 select-none animate-float-slow">π</div>
+  <div className="absolute bottom-2 left-80 text-5xl text-blue-300/30 select-none animate-float">√</div>
+  <div className="absolute top-1/2 left-2 text-3xl text-teal-300/50 select-none rotate-12">Σ</div>
+  <div className="absolute bottom-2 right-8 text-4xl text-indigo-300/40 select-none rotate-6">∞</div> */}
 
-          <Card className="bg-gradient-to-br from-warning to-accent text-warning-foreground border-0 shadow-lg">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <Trophy className="w-5 h-5" />
-                Level
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-4xl font-bold">{profile?.level || "Bronze"}</p>
-            </CardContent>
-          </Card>
-        </div>
+  <CardHeader className="relative z-10">
+    
+    <CardTitle className="text-xl font-bold flex items-center gap-2">
+      📘 My Math Level Progress
+    </CardTitle>
+    <CardDescription className="text-sm">
+      Solve problems and boost your math XP!
+    </CardDescription>
+  </CardHeader>
 
-        {/* Progress Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>My Level Progress</CardTitle>
-            <CardDescription>Keep practicing to level up!</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Progress value={((profile?.total_points || 0) % 100)} className="h-4" />
-            <p className="text-sm text-muted-foreground mt-2">
-              {100 - ((profile?.total_points || 0) % 100)} XP to next level
-            </p>
-          </CardContent>
-        </Card>
+  <CardContent className="relative z-10">
+    {/* ✅ Fancy Progress Bar */}
+    <div className="relative w-full h-2 rounded-full bg-gray-200 overflow-hidden shadow-inner">
+      <div
+        className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+        style={{ width: `${(profile?.total_points || 0) % 100}%` }}
+      />
+    </div>
+
+    <p className="text-sm text-muted-foreground mt-3">
+      <span className="font-semibold text-blue-600">
+        {100 - ((profile?.total_points || 0) % 100)} XP
+      </span>{" "}
+      to reach the next level 📈
+    </p>
+  </CardContent>
+
+  {/* ✅ Animations */}
+  <style>{`
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes float-slow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+  `}</style>
+</Card>
+
 
         {/* Quizzes */}
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Available Quizzes</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {quizzes.map((quiz) => (
-              <Card key={quiz.id} className="hover:shadow-xl transition-shadow cursor-pointer border-2 hover:border-primary">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-xl">{quiz.title}</CardTitle>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getDifficultyColor(quiz.difficulty)}`}>
-                      {quiz.difficulty}
-                    </span>
-                  </div>
-                  <CardDescription className="line-clamp-2">{quiz.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-muted-foreground">
-                      {quiz.total_questions} questions
-                    </p>
-                    <Button 
-                      onClick={() => navigate(`/quiz/${quiz.id}`)}
-                      className="gap-2"
-                    >
-                      <Play className="w-4 h-4" />
-                      Start
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+        <div className="mt-10">
+  <h2 className="text-2xl font-bold mb-6">Available Quizzes</h2>
+
+  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rounded-l-3xl bg-slate-50">
+    
+
+    {/* LEFT SIDE CHOOSE OPTION CARD */}
+    <div className="bg-primary p-8 rounded-l-3xl w-80 text-white flex flex-col justify-center shadow-lg">
+      <h3 className="text-2xl font-bold mb-2">Choose the option</h3>
+      <p className="text-teal-50 text-sm">
+        Go to study in the year of your choice
+      </p>
+    </div>
+
+    {/* RIGHT SIDE QUIZ CARDS */}
+    <div className="lg:col-span-2 space-y-5 mt-5 mb-5 mr-8 ">
+      
+      {quizzes.map((quiz, index) => (
+        <div
+  key={quiz.id}
+  onClick={() => navigate(`/quiz/${quiz.id}`)}
+  className={`
+    w-full p-5 rounded-2xl cursor-pointer flex items-center justify-between 
+    transition-all border shadow-sm
+    hover:bg-primary hover:text-white hover:scale-[1.01] hover:shadow-md
+  `}
+>
+
+          {/* Left icon + title */}
+          <div className="flex items-center gap-4">
+            
+
+            {/* ICON */}
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow 
+              `}
+            >
+              {index === 0 && "🎁"}
+              {index === 1 && "🟡"}
+              {index === 2 && "👑"}
+            </div>
+
+            {/* TITLE */}
+            <div>
+              <p className="text-lg font-semibold">{quiz.title}</p>
+              <p>
+                {quiz.total_questions} questions
+              </p>
+            </div>
           </div>
+          
+
+          {/* right side: Start Now arrow */}
+          <div
+            className={`flex items-center gap-2 text-sm font-medium text-primary hover: text:white
+            `}
+          >
+            Start Now →
+          </div>
+
         </div>
+      ))}
+
+    </div>
+  </div>
+</div>
+
+
       </div>
     </div>
   );

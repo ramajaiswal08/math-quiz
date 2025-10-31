@@ -8,6 +8,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { toast } from "sonner";
 import { z } from "zod";
 import mathHero from "@/assets/math-hero.jpg";
+import carousel1 from "@/assets/carousel1.jpeg"
+import carousel3 from "@/assets/carousel3.jpg"
+import carousel2 from "@/assets/carousel2.jpeg"
+
+
+
+const carouselImages = [
+  { img: carousel1 , quote: "Mathematics is the language of the universe." },
+  { img: carousel2 , quote: "Every problem has a solution waiting to be discovered." },
+  { img: carousel3, quote: "Believe in yourself. Numbers always add up!" },
+];
+
 
 const authSchema = z.object({
   email: z.string().email("Invalid email address").max(255),
@@ -22,6 +34,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
+  const [index , setIndex] = useState(0);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -32,6 +45,14 @@ const Auth = () => {
     };
     checkUser();
   }, [navigate]);
+
+
+    useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % carouselImages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,96 +114,105 @@ const Auth = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary-light via-background to-secondary">
-      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-8 items-center">
-        <div className="hidden md:block">
-          <img 
-            src={mathHero} 
-            alt="Math learning illustration" 
-            className="w-full h-auto rounded-3xl shadow-2xl"
+ return (
+  <div className="min-h-screen bg-gradient-to-br from-primary-light via-background to-secondary flex items-center justify-center p-6">
+
+    <div className="grid md:grid-cols-2 gap-10 max-w-6xl w-full">
+
+      {/* ✅ LEFT SIDE CAROUSEL */}
+      <div className="hidden md:flex flex-col items-center justify-center space-y-6 px-6">
+        <div className="w-full h-[330px] rounded-3xl overflow-hidden shadow-xl border border-white/20">
+          <img
+            src={carouselImages[index].img}
+            alt="carousel"
+            className="w-full h-full object-cover transition-all duration-700"
           />
         </div>
-        
-        <Card className="shadow-2xl border-2">
-          <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              {isLogin ? "Welcome Back!" : "Join Math Quiz"}
-            </CardTitle>
-            <CardDescription className="text-base">
-              {isLogin ? "Continue your learning journey" : "Start your mathematics adventure"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
-                <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    type="text"
-                    placeholder="Choose a username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    required={!isLogin}
-                    maxLength={50}
-                    className="h-12"
-                  />
-                </div>
-              )}
-              
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  maxLength={255}
-                  className="h-12"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  maxLength={100}
-                  className="h-12"
-                />
-              </div>
-
-              <Button 
-                type="submit" 
-                className="w-full h-12 text-lg font-semibold"
-                disabled={loading}
-              >
-                {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
-              </Button>
-
-              <p className="text-center text-sm text-muted-foreground">
-                {isLogin ? "Don't have an account? " : "Already have an account? "}
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(!isLogin)}
-                  className="text-primary font-semibold hover:underline"
-                >
-                  {isLogin ? "Sign Up" : "Sign In"}
-                </button>
-              </p>
-            </form>
-          </CardContent>
-        </Card>
+        <p className="text-lg text-center font-semibold text-primary">
+          {carouselImages[index].quote}
+        </p>
       </div>
+
+      {/* ✅ FORM CARD (Reduced Width) */}
+      <Card className="shadow-2xl border border-white/20 rounded-3xl max-w-md w-full mx-auto">
+        <CardHeader className="text-center space-y-2">
+          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            {isLogin ? "Welcome Back!" : "Join Math Quiz"}
+          </CardTitle>
+          <CardDescription className="text-base font-medium">
+            {isLogin ? "Continue your learning journey" : "Start your mathematics adventure"}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-5">
+
+            {!isLogin && (
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Choose a username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required={!isLogin}
+                  maxLength={50}
+                  className="h-12 rounded-xl"
+                />
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="h-12 rounded-xl"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="h-12 rounded-xl"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full h-12 text-lg font-semibold rounded-xl"
+              disabled={loading}
+            >
+              {loading ? "Loading..." : isLogin ? "Sign In" : "Sign Up"}
+            </Button>
+
+            <p className="text-center text-sm text-muted-foreground">
+              {isLogin ? "Don't have an account? " : "Already have an account? "}
+              <button
+                type="button"
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-primary font-semibold hover:underline"
+              >
+                {isLogin ? "Sign Up" : "Sign In"}
+              </button>
+            </p>
+          </form>
+        </CardContent>
+      </Card>
     </div>
-  );
+  </div>
+);
 };
 
 export default Auth;

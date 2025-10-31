@@ -1,16 +1,55 @@
 -- Create profiles table for user data
-CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  username TEXT UNIQUE NOT NULL,
-  display_name TEXT,
-  avatar_url TEXT,
-  total_points INTEGER DEFAULT 0,
-  current_streak INTEGER DEFAULT 0,
-  best_streak INTEGER DEFAULT 0,
-  level TEXT DEFAULT 'Bronze',
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- CREATE TABLE IF NOT EXISTS public.profiles (
+--   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+--   username TEXT UNIQUE NOT NULL,
+--   display_name TEXT,
+--   avatar_url TEXT,
+--   total_points INTEGER DEFAULT 0,
+--   current_streak INTEGER DEFAULT 0,
+--   best_streak INTEGER DEFAULT 0,
+--   level TEXT DEFAULT 'Bronze',
+--   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+--   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+-- );
+
+-- INSERT INTO public.profiles (id, username, display_name, email)
+-- VALUES (
+--     NEW.id,
+--     COALESCE(NEW.raw_user_meta_data->>'username', SPLIT_PART(NEW.email, '@', 1)),
+--     COALESCE(NEW.raw_user_meta_data->>'display_name', SPLIT_PART(NEW.email, '@', 1)),
+--     NEW.email
+-- );
+
+
+-- CREATE TABLE IF NOT EXISTS public.profiles (
+--   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+--   name TEXT NOT NULL,
+--   email TEXT UNIQUE NOT NULL,
+--   created_at TIMESTAMPTZ DEFAULT NOW()
+-- );
+
+
+CREATE TABLE IF NOT EXISTS public.form_users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+ALTER TABLE public.form_users ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can insert form users" 
+  ON public.form_users FOR INSERT 
+  WITH CHECK (true);
+
+CREATE POLICY "Anyone can read form users"
+  ON public.form_users FOR SELECT
+  USING (true);
+
+
+
+
+
 
 -- Enable RLS
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
