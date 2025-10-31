@@ -30,235 +30,158 @@ interface Quiz {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const [loading, setLoading] = useState(true);
+ const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
-      setUser(session.user);
-      await fetchProfile(session.user.id);
-      await fetchQuizzes();
-      setLoading(false);
-    };
+useEffect(() => {
+  const userString = localStorage.getItem("user");
 
-    checkUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (!session) {
-        navigate("/auth");
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-
-  const fetchProfile = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .single();
-
-    if (error) toast.error("Failed to load profile");
-    else setProfile(data);
-  };
-
-  const fetchQuizzes = async () => {
-    const { data, error } = await supabase
-      .from("quizzes")
-      .select("*")
-      .order("difficulty");
-
-    if (error) toast.error("Failed to load quizzes");
-    else setQuizzes(data || []);
-  };
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast.success("Logged out successfully");
+  if (!userString) {
     navigate("/");
-  };
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "easy": return "bg-success text-success-foreground";
-      case "medium": return "bg-warning text-warning-foreground";
-      case "hard": return "bg-destructive text-destructive-foreground";
-      default: return "bg-muted text-muted-foreground";
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-2xl font-semibold text-primary">Loading...</div>
-      </div>
-    );
+    return;
   }
+
+  const user = JSON.parse(userString);
+
+  // ✅ Load quizzes
+  fetchQuizzes();
+
+  // ✅ Set profile from local user
+  setProfile({
+    username: user.name,
+    display_name: user.name,
+    total_points: 20,
+    current_streak: 0,
+    best_streak: 0,
+    level: "Beginner"
+  });
+
+  setLoading(false);
+}, []);
+
+const fetchQuizzes = async () => {
+  const { data, error } = await supabase
+    .from("quizzes")
+    .select("*")
+    .order("difficulty");
+
+  if (error) {
+    console.error("Quizzes error:", error);
+    return;
+  }
+
+  console.log("Quizzes fetched:", data); // ✅ data exists here
+  setQuizzes(data || []);
+};
+
+const handleLogout = () => {
+  localStorage.removeItem("user");
+  navigate("/");
+};
+
+if (loading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-2xl font-semibold text-primary">Loading...</div>
+    </div>
+  );
+}
 
   return (
     <div className="relative min-h-screen p-4 overflow-hidden">
 
-      
       <div
         className="absolute inset-0 bg-cover bg-center opacity-10"
         style={{ backgroundImage: `url(${bg})` }}
       ></div>
 
-      {/* ✅ Floating Math Icons */}
-      <div className="absolute inset-0 pointer-events-none math-floating-icons">
-        <span className="math-icon">➕</span>
-        <span className="math-icon">➖</span>
-        {/* <span className="math-icon">✖️</span>
-        <span className="math-icon">➗</span> */}
-      </div>
 
-      {/* ✅ ACTUAL CONTENT */}
+      {/* ✅ CONTENT */}
       <div className="relative max-w-6xl mx-auto space-y-6">
 
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-4xl font-bold text-foreground">
-              Hi, {profile?.display_name || profile?.username}! 👋
+              Hi, {profile?.username}! 👋
             </h1>
-            <p className="text-muted-foreground text-lg mt-1">Let's continue your math journey</p>
+            <p className="text-muted-foreground text-lg mt-1">
+              Let's continue your math journey
+            </p>
           </div>
+
           <Button variant="outline" onClick={handleLogout} className="gap-2">
             <LogOut className="w-4 h-4" />
             Logout
           </Button>
         </div>
 
-        {/* Math Themed Progress Card */}
-<Card className="relative overflow-hidden rounded-3xl shadow-xl border-0 bg-gradient-to-br from-blue-50 via-white to-purple-50">
 
-  {/* ✅ Floating Math Symbols */}
-  {/* <div className="absolute top-4 right-80 text-4xl text-purple-300/40 select-none animate-float-slow">π</div>
-  <div className="absolute bottom-2 left-80 text-5xl text-blue-300/30 select-none animate-float">√</div>
-  <div className="absolute top-1/2 left-2 text-3xl text-teal-300/50 select-none rotate-12">Σ</div>
-  <div className="absolute bottom-2 right-8 text-4xl text-indigo-300/40 select-none rotate-6">∞</div> */}
+        {/* ✅ PROGRESS CARD */}
+        <Card className="rounded-3xl shadow-xl border-0 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold">
+              📘 My Math Level Progress
+            </CardTitle>
+            <CardDescription>Boost your math XP!</CardDescription>
+          </CardHeader>
 
-  <CardHeader className="relative z-10">
-    
-    <CardTitle className="text-xl font-bold flex items-center gap-2">
-      📘 My Math Level Progress
-    </CardTitle>
-    <CardDescription className="text-sm">
-      Solve problems and boost your math XP!
-    </CardDescription>
-  </CardHeader>
+          <CardContent>
+            <div className="w-full h-2 rounded-full bg-gray-200 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                style={{ width: `20%` }}
+              />
+            </div>
 
-  <CardContent className="relative z-10">
-    {/* ✅ Fancy Progress Bar */}
-    <div className="relative w-full h-2 rounded-full bg-gray-200 overflow-hidden shadow-inner">
-      <div
-        className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
-        style={{ width: `${(profile?.total_points || 0) % 100}%` }}
-      />
-    </div>
-
-    <p className="text-sm text-muted-foreground mt-3">
-      <span className="font-semibold text-blue-600">
-        {100 - ((profile?.total_points || 0) % 100)} XP
-      </span>{" "}
-      to reach the next level 📈
-    </p>
-  </CardContent>
-
-  {/* ✅ Animations */}
-  <style>{`
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
-    }
-    @keyframes float-slow {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-10px); }
-    }
-    .animate-float { animation: float 3s ease-in-out infinite; }
-    .animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
-  `}</style>
-</Card>
+            <p className="text-sm text-muted-foreground mt-3">
+              80 XP to reach the next level 📈
+            </p>
+          </CardContent>
+        </Card>
 
 
-        {/* Quizzes */}
+        {/* ✅ QUIZZES */}
         <div className="mt-10">
-  <h2 className="text-2xl font-bold mb-6">Available Quizzes</h2>
+          <h2 className="text-2xl font-bold mb-6">Available Quizzes</h2>
 
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 rounded-l-3xl bg-slate-50">
-    
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 bg-slate-50 rounded-l-3xl">
 
-    {/* LEFT SIDE CHOOSE OPTION CARD */}
-    <div className="bg-primary p-8 rounded-l-3xl w-80 text-white flex flex-col justify-center shadow-lg">
-      <h3 className="text-2xl font-bold mb-2">Choose the option</h3>
-      <p className="text-teal-50 text-sm">
-        Go to study in the year of your choice
-      </p>
-    </div>
-
-    {/* RIGHT SIDE QUIZ CARDS */}
-    <div className="lg:col-span-2 space-y-5 mt-5 mb-5 mr-8 ">
-      
-      {quizzes.map((quiz, index) => (
-        <div
-  key={quiz.id}
-  onClick={() => navigate(`/quiz/${quiz.id}`)}
-  className={`
-    w-full p-5 rounded-2xl cursor-pointer flex items-center justify-between 
-    transition-all border shadow-sm
-    hover:bg-primary hover:text-white hover:scale-[1.01] hover:shadow-md
-  `}
->
-
-          {/* Left icon + title */}
-          <div className="flex items-center gap-4">
-            
-
-            {/* ICON */}
-            <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow 
-              `}
-            >
-              {index === 0 && "🎁"}
-              {index === 1 && "🟡"}
-              {index === 2 && "👑"}
+            {/* left card */}
+            <div className="bg-primary p-8 text-white rounded-l-3xl w-80 flex flex-col justify-center">
+              <h3 className="text-2xl font-bold mb-2">Choose the option</h3>
+              <p className="text-sm">Go to study in the year of your choice</p>
             </div>
 
-            {/* TITLE */}
-            <div>
-              <p className="text-lg font-semibold">{quiz.title}</p>
-              <p>
-                {quiz.total_questions} questions
-              </p>
+            {/* Quizzes */}
+            <div className="lg:col-span-2 space-y-5 mt-5 mb-5 mr-8">
+              {quizzes.map((quiz, index) => (
+                <div
+                  key={quiz.id}
+                  onClick={() => navigate(`/quiz/${quiz.id}`)}
+                  className="p-5 rounded-2xl cursor-pointer flex justify-between border hover:bg-primary hover:text-white transition"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center text-2xl">
+                      {index === 0 && "🎁"}
+                      {index === 1 && "🟡"}
+                      {index === 2 && "👑"}
+                    </div>
+
+                    <div>
+                      <p className="text-lg font-semibold">{quiz.title}</p>
+                      <p>{quiz.total_questions} questions</p>
+                    </div>
+                  </div>
+
+                  <div className="font-medium">Start Now →</div>
+                </div>
+              ))}
             </div>
-          </div>
-          
 
-          {/* right side: Start Now arrow */}
-          <div
-            className={`flex items-center gap-2 text-sm font-medium text-primary hover: text:white
-            `}
-          >
-            Start Now →
           </div>
-
         </div>
-      ))}
-
-    </div>
-  </div>
-</div>
-
 
       </div>
     </div>

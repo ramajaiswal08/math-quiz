@@ -77,50 +77,42 @@ useEffect(() => {
   return () => clearTimeout(timer);
 }, [timeLeft, selectedAnswer]);
 
+useEffect(() => {
+  fetchQuiz();   // ✅ No session check
+}, [quizId]);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/auth");
-        return;
-      }
-      setUserId(session.user.id);
-      await fetchQuiz();
-    };
-    checkUser();
-  }, [quizId, navigate]);
+const fetchQuiz = async () => {
+  if (!quizId) return;
 
-  const fetchQuiz = async () => {
-    if (!quizId) return;
+  // ✅ load quiz
+  const { data: quizData, error: quizError } = await supabase
+    .from("quizzes")
+    .select("*")
+    .eq("id", quizId)
+    .single();
 
-    const { data: quizData, error: quizError } = await supabase
-      .from("quizzes")
-      .select("*")
-      .eq("id", quizId)
-      .single();
+  if (quizError || !quizData) {
+    toast.error("Quiz not found");
+    navigate("/dashboard");
+    return;
+  }
 
-    if (quizError) {
-      toast.error("Quiz not found");
-      navigate("/dashboard");
-      return;
-    }
+  setQuiz(quizData);
 
-    setQuiz(quizData);
+  // ✅ load questions
+  const { data: questionsData, error: questionsError } = await supabase
+    .from("questions")
+    .select("*")
+    .eq("quiz_id", quizId)
+    .order("order_num");
 
-    const { data: questionsData, error: questionsError } = await supabase
-      .from("questions")
-      .select("*")
-      .eq("quiz_id", quizId)
-      .order("order_num");
+  if (questionsError) {
+    toast.error("Failed to load questions");
+    return;
+  }
 
-    if (questionsError) {
-      toast.error("Failed to load questions");
-    } else {
-      setQuestions(questionsData || []);
-    }
-  };
-
+  setQuestions(questionsData ?? []);
+};
 
 
   const handleAnswer = (answer: string) => {
@@ -143,22 +135,36 @@ useEffect(() => {
       toast.error("Wrong answer. Try the next one!");
     }
   };
-
-  const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(null);
-    } else {
+const handleNext = () => {
+  // Last question → show result
+  if (currentQuestion === questions.length - 1) {
+    setTimeout(() => {
       finishQuiz();
-    }
-  };
+    }, 200); // slight delay so UI can update
+    return;
+  }
 
-  const finishQuiz = async () => {
-    if (!userId || !quiz) return;
+  // Next question
+  setCurrentQuestion(currentQuestion + 1);
+  setSelectedAnswer(null);
+};
 
-    const points = score * 10;
 
-    await supabase.from("quiz_attempts").insert({
+const finishQuiz = async () => {
+  if (!quiz) return;
+
+  const points = score * 10;
+
+  // ✅ If userId does NOT exist, still show result screen.
+  if (!userId) {
+    setShowResult(true);
+    return;
+  }
+
+  // ✅ Insert attempt only when userId exists
+  const { error: attemptError } = await supabase
+    .from("quiz_attempts")
+    .insert({
       user_id: userId,
       quiz_id: quiz.id,
       score: points,
@@ -166,47 +172,44 @@ useEffect(() => {
       correct_answers: score,
     });
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("total_points, current_streak")
-      .eq("id", userId)
-      .single();
+  if (attemptError) {
+    console.error("Attempt insert error:", attemptError);
+    toast.error("Failed to save quiz attempt");
+  }
 
-    if (profile) {
-      await supabase
-        .from("profiles")
-        .update({
-          total_points: profile.total_points + points,
-          current_streak: profile.current_streak + 1,
-        })
-        .eq("id", userId);
-    }
+  setShowResult(true);
 
-    setShowResult(true);
-    
-    if (score === questions.length) {
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    }
-  };
+  if (score === questions.length) {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+  }
+};
 
- const getOptionClass = (option) => {
+const getOptionClass = (option) => {
+  const correct = option === questions[currentQuestion]?.correct_answer;
+  const selected = option === selectedAnswer;
+
+  // No answer chosen yet
   if (!selectedAnswer) {
     return "option-hover border bg-transparent";
   }
 
-  const correct = option === questions[currentQuestion].correct_answer;
-  const selected = option === selectedAnswer;
-
+  // Selected correct
   if (selected && correct) return "option-correct border";
+
+  // Selected wrong
   if (selected && !correct) return "option-wrong border";
+
+  // Correct option (but not selected)
   if (correct) return "option-correct border";
 
+  // Non-selected, non-correct options
   return "opacity-40 border";
 };
+
 
 
   if (showResult) {

@@ -29,6 +29,15 @@
 -- );
 
 
+CREATE TABLE public.form_users (
+  id uuid NOT NULL DEFAULT gen_random_uuid(),
+  name text NOT NULL,
+  email text NOT NULL UNIQUE,
+  created_at timestamp with time zone DEFAULT now(),
+  CONSTRAINT form_users_pkey PRIMARY KEY (id)
+);
+
+
 CREATE TABLE IF NOT EXISTS public.form_users (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
