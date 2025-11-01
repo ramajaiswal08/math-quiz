@@ -287,8 +287,8 @@ navigate("/dashboard");
      <div className="grid md:grid-cols-2 gap-10 max-w-6xl w-full">
 
        {/* ✅ LEFT SIDE CAROUSEL */}
-       <div className="hidden md:flex flex-col items-center justify-center space-y-6 px-6">
-         <div className="w-full h-[330px] rounded-3xl overflow-hidden shadow-xl border border-white/20">
+       <div className="hidden md:flex flex-col items-center justify-center space-y-6 px-6 py-5">
+         <div className="w-full h-[400px] rounded-3xl overflow-hidden shadow-xl border border-white/20">
            <img
             src={carouselImages[index].img}
             alt="carousel"

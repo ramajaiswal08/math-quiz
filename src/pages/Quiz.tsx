@@ -19,7 +19,9 @@ interface Question {
   option_d: string;
   correct_answer: string;
   order_num: number;
+  explanation: string;   // ✅ new field
 }
+
 
 interface Quiz {
   id: string;
@@ -227,8 +229,8 @@ const getOptionClass = (option) => {
         style={{ backgroundImage: `url(${bg2})` }}
       ></div>
 
-        <Card className="max-w-md w-full shadow-2xl border-2 border-primary/20 bg-white/80 backdrop-blur-xl rounded-2xl">
-        <CardContent className="pt-8 text-center space-y-6">
+        <Card className="max-w-md w-full shadow-2xl border-2 border-primary/20 bg-white/80 backdrop-blur-xl rounded-2xl p-1">
+        <CardContent className="pt-5 text-center space-y-6">
           <div className="text-6xl">{score === questions.length ? "🏆" : "🎯"}</div>
 
           <h2 className="text-4xl font-extrabold text-primary">Quiz Complete!</h2>
@@ -282,7 +284,7 @@ const getOptionClass = (option) => {
             </p>
           </div>
 
-          <div className="flex gap-4 pt-4">
+          <div className="flex gap-4 pt-3">
 
             <Button
               onClick={() => window.location.reload()}
@@ -342,6 +344,12 @@ const getOptionClass = (option) => {
       {/* HEADER */}
       <Card className="shadow-xl border border-primary/30 rounded-2xl bg-background/40 backdrop-blur-lg">
         <CardContent className="p-6 space-y-4">
+          <Button 
+  onClick={() => navigate("/dashboard")}
+  className="bg-secondary text-secondary-foreground px-4 py-1 rounded-lg"
+>
+  ← Back
+</Button>
 
           {/* Title & Score */}
           <div className="flex justify-between items-center">
@@ -368,36 +376,57 @@ const getOptionClass = (option) => {
           </div>
 
           {/* Options */}
-          <div className="space-y-3 pt-2">
-            {[
-              { key: "A", text: currentQ.option_a },
-              { key: "B", text: currentQ.option_b },
-              { key: "C", text: currentQ.option_c },
-              { key: "D", text: currentQ.option_d },
-            ].map((option) => (
-              <button
-                key={option.key}
-                onClick={() => handleAnswer(option.key)}
-                disabled={!!selectedAnswer}
-                className={`w-full p-4 rounded-xl border-2 text-left transition-all ${getOptionClass(option.key)}`}
-              >
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
-                    {option.key}
-                  </span>
-                  <span>{option.text}</span>
+          {/* Options */}
+<div className="space-y-3 pt-2">
+  {[
+    { key: "A", text: currentQ.option_a },
+    { key: "B", text: currentQ.option_b },
+    { key: "C", text: currentQ.option_c },
+    { key: "D", text: currentQ.option_d },
+  ].map((option) => (
+    <button
+      key={option.key}
+      onClick={() => handleAnswer(option.key)}
+      disabled={!!selectedAnswer}
+      className={`w-full p-4 rounded-xl border-2 text-left transition-all ${getOptionClass(option.key)}`}
+    >
+      <div className="flex items-center gap-3">
+        <span className="w-8 h-8 flex items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
+          {option.key}
+        </span>
+        <span>{option.text}</span>
 
-                  {selectedAnswer && option.key === currentQ.correct_answer && (
-                    <Check className="ms-auto text-green-400" />
-                  )}
+        {selectedAnswer &&
+          option.key === currentQ.correct_answer && (
+            <Check className="ms-auto text-green-400" />
+          )}
 
-                  {selectedAnswer === option.key && option.key !== currentQ.correct_answer && (
-                    <X className="ms-auto text-red-400" />
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
+        {selectedAnswer &&
+          selectedAnswer === option.key &&
+          selectedAnswer !== currentQ.correct_answer && (
+            <X className="ms-auto text-red-400" />
+          )}
+      </div>
+    </button>
+  ))}
+
+  {/* ✅ Explanation - shown only after answering */}
+  {selectedAnswer && selectedAnswer !== currentQ.correct_answer && (
+    <div className="mt-4 p-4 bg-red-100 border border-red-300 rounded-xl">
+      <p className="text-red-600 font-semibold">Explanation:</p>
+      <p className="text-gray-800 mt-1">{currentQ.explanation}</p>
+    </div>
+  )}
+
+  {/* ✅ Correct Answer Explanation (optional): */}
+  {selectedAnswer && selectedAnswer === currentQ.correct_answer && (
+    <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded-xl">
+      <p className="text-green-600 font-semibold">Correct! ✅</p>
+      <p className="text-gray-800 mt-1">{currentQ.explanation}</p>
+    </div>
+  )}
+</div>
+
 
           {/* Footer NEXT Button */}
           <div className="flex justify-between items-center pt-4">
