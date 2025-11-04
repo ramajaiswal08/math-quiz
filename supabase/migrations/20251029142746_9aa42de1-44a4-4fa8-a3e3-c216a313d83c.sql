@@ -182,21 +182,77 @@ INSERT INTO public.quizzes (id, title, description, difficulty, total_questions)
   ('550e8400-e29b-41d4-a716-446655440003', 'Advanced Mathematics', 'Complex problems for math enthusiasts', 'hard', 5);
 
 -- Insert sample questions
-INSERT INTO public.questions (quiz_id, question_text, option_a, option_b, option_c, option_d, correct_answer, order_num) VALUES
-  ('550e8400-e29b-41d4-a716-446655440001', 'What is 5 + 3?', '6', '7', '8', '9', 'C', 1),
-  ('550e8400-e29b-41d4-a716-446655440001', 'What is 12 - 4?', '6', '7', '8', '9', 'C', 2),
-  ('550e8400-e29b-41d4-a716-446655440001', 'What is 9 + 6?', '13', '14', '15', '16', 'C', 3),
-  ('550e8400-e29b-41d4-a716-446655440001', 'What is 20 - 7?', '11', '12', '13', '14', 'C', 4),
-  ('550e8400-e29b-41d4-a716-446655440001', 'What is 15 + 8?', '21', '22', '23', '24', 'C', 5),
+-- INSERT INTO public.questions (quiz_id, question_text, option_a, option_b, option_c, option_d, correct_answer, order_num) VALUES
+--   ('550e8400-e29b-41d4-a716-446655440001', 'What is 5 + 3?', '6', '7', '8', '9', 'C', 1),
+--   ('550e8400-e29b-41d4-a716-446655440001', 'What is 12 - 4?', '6', '7', '8', '9', 'C', 2),
+--   ('550e8400-e29b-41d4-a716-446655440001', 'What is 9 + 6?', '13', '14', '15', '16', 'C', 3),
+--   ('550e8400-e29b-41d4-a716-446655440001', 'What is 20 - 7?', '11', '12', '13', '14', 'C', 4),
+--   ('550e8400-e29b-41d4-a716-446655440001', 'What is 15 + 8?', '21', '22', '23', '24', 'C', 5),
   
-  ('550e8400-e29b-41d4-a716-446655440002', 'What is 7 × 8?', '54', '55', '56', '57', 'C', 1),
-  ('550e8400-e29b-41d4-a716-446655440002', 'What is 9 × 6?', '52', '53', '54', '55', 'C', 2),
-  ('550e8400-e29b-41d4-a716-446655440002', 'What is 12 × 5?', '58', '59', '60', '61', 'C', 3),
-  ('550e8400-e29b-41d4-a716-446655440002', 'What is 8 × 9?', '70', '71', '72', '73', 'C', 4),
-  ('550e8400-e29b-41d4-a716-446655440002', 'What is 11 × 7?', '75', '76', '77', '78', 'C', 5),
+--   ('550e8400-e29b-41d4-a716-446655440002', 'What is 7 × 8?', '54', '55', '56', '57', 'C', 1),
+--   ('550e8400-e29b-41d4-a716-446655440002', 'What is 9 × 6?', '52', '53', '54', '55', 'C', 2),
+--   ('550e8400-e29b-41d4-a716-446655440002', 'What is 12 × 5?', '58', '59', '60', '61', 'C', 3),
+--   ('550e8400-e29b-41d4-a716-446655440002', 'What is 8 × 9?', '70', '71', '72', '73', 'C', 4),
+--   ('550e8400-e29b-41d4-a716-446655440002', 'What is 11 × 7?', '75', '76', '77', '78', 'C', 5),
   
-  ('550e8400-e29b-41d4-a716-446655440003', 'If Rani has 10 apples and gives 4 to her friend, how many are left?', '5', '6', '7', '8', 'B', 1),
-  ('550e8400-e29b-41d4-a716-446655440003', 'What is 15% of 200?', '25', '30', '35', '40', 'B', 2),
-  ('550e8400-e29b-41d4-a716-446655440003', 'Solve: 3x + 5 = 20, what is x?', '3', '4', '5', '6', 'C', 3),
-  ('550e8400-e29b-41d4-a716-446655440003', 'What is the area of a rectangle with length 8 and width 6?', '42', '44', '46', '48', 'D', 4),
-  ('550e8400-e29b-41d4-a716-446655440003', 'What is √144?', '10', '11', '12', '13', 'C', 5);
+--   ('550e8400-e29b-41d4-a716-446655440003', 'If Rani has 10 apples and gives 4 to her friend, how many are left?', '5', '6', '7', '8', 'B', 1),
+--   ('550e8400-e29b-41d4-a716-446655440003', 'What is 15% of 200?', '25', '30', '35', '40', 'B', 2),
+--   ('550e8400-e29b-41d4-a716-446655440003', 'Solve: 3x + 5 = 20, what is x?', '3', '4', '5', '6', 'C', 3),
+--   ('550e8400-e29b-41d4-a716-446655440003', 'What is the area of a rectangle with length 8 and width 6?', '42', '44', '46', '48', 'D', 4),
+--   ('550e8400-e29b-41d4-a716-446655440003', 'What is √144?', '10', '11', '12', '13', 'C', 5);
+
+
+
+
+INSERT INTO public.questions 
+(quiz_id, question_text, option_a, option_b, option_c, option_d, correct_answer, order_num, explanation) 
+VALUES
+-- Quiz 1
+('550e8400-e29b-41d4-a716-446655440001', 'What is 5 + 3?', '6', '7', '8', '9', 'C', 1,
+ '5 plus 3 equals 8 because when you add 3 more to 5, the total becomes 8.'),
+
+('550e8400-e29b-41d4-a716-446655440001', 'What is 12 - 4?', '6', '7', '8', '9', 'C', 2,
+ '12 minus 4 equals 8 because subtracting 4 from 12 leaves 8.'),
+
+-- ('550e8400-e29b-41d4-a716-446655440001', 'What is 9 + 6?', '13', '14', '15', '16', 'C', 3,
+--  '9 plus 6 equals 15 because adding 6 increases 9 to 15.'),
+
+-- ('550e8400-e29b-41d4-a716-446655440001', 'What is 20 - 7?', '11', '12', '13', '14', 'C', 4,
+--  '20 minus 7 equals 13 because removing 7 from 20 leaves 13.'),
+
+-- ('550e8400-e29b-41d4-a716-446655440001', 'What is 15 + 8?', '21', '22', '23', '24', 'C', 5,
+--  '15 plus 8 equals 23 because adding 8 increases 15 to 23.'),
+
+
+-- Quiz 2
+('550e8400-e29b-41d4-a716-446655440002', 'What is 7 × 8?', '54', '55', '56', '57', 'C', 1,
+ '7 multiplied by 8 equals 56 because multiplication is repeated addition: 7 added 8 times equals 56.'),
+
+('550e8400-e29b-41d4-a716-446655440002', 'What is 9 × 6?', '52', '53', '54', '55', 'C', 2,
+ '9 multiplied by 6 equals 54 because 9 added 6 times results in 54.'),
+
+-- ('550e8400-e29b-41d4-a716-446655440002', 'What is 12 × 5?', '58', '59', '60', '61', 'C', 3,
+--  '12 multiplied by 5 equals 60 because 12 added 5 times totals to 60.'),
+
+-- ('550e8400-e29b-41d4-a716-446655440002', 'What is 8 × 9?', '70', '71', '72', '73', 'C', 4,
+--  '8 multiplied by 9 equals 72 because 8 added 9 times becomes 72.'),
+
+-- ('550e8400-e29b-41d4-a716-446655440002', 'What is 11 × 7?', '75', '76', '77', '78', 'C', 5,
+--  '11 multiplied by 7 equals 77 because 11 added 7 times results in 77.'),
+
+
+-- Quiz 3
+('550e8400-e29b-41d4-a716-446655440003', 'If Rani has 10 apples and gives 4, how many are left?', '5', '6', '7', '8', 'B', 1,
+ 'If she has 10 apples and gives away 4, you subtract 4 from 10, leaving 6.'),
+
+('550e8400-e29b-41d4-a716-446655440003', 'What is 15% of 200?', '25', '30', '35', '40', 'B', 2,
+ '15% of 200 is 30 because 15% means 15 out of 100, and 0.15 × 200 = 30.'),
+
+-- ('550e8400-e29b-41d4-a716-446655440003', 'Solve: 3x + 5 = 20, what is x?', '3', '4', '5', '6', 'C', 3,
+--  '3x + 5 = 20 → subtract 5 → 3x = 15 → divide by 3 → x = 5.'),
+
+-- ('550e8400-e29b-41d4-a716-446655440003', 'Area of a rectangle with length 8 and width 6?', '42', '44', '46', '48', 'D', 4,
+--  'Area = length × width = 8 × 6 = 48.'),
+
+-- ('550e8400-e29b-41d4-a716-446655440003', 'What is √144?', '10', '11', '12', '13', 'C', 5,
+--  'The square root of 144 is 12 because 12 × 12 = 144.');

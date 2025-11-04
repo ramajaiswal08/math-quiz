@@ -60,7 +60,7 @@ const { width, height } = windowSize;
 
 
  useEffect(() => {
-  setTimeLeft(15);
+  setTimeLeft(30);
 }, [currentQuestion]);
 
    
@@ -156,6 +156,13 @@ const finishQuiz = async () => {
   if (!quiz) return;
 
   const points = score * 10;
+
+   confetti({
+    particleCount: 120,
+    spread: 80,
+    origin: { y: 0.6 }
+  });
+
 
   // ✅ If userId does NOT exist, still show result screen.
   if (!userId) {
