@@ -205,8 +205,8 @@ const Quiz = () => {
           <img
             src={chubbLogo}
             alt="Chubb Logo"
-            className="h-8 pl-6 w-auto object-contain drop-shadow-md cursor-pointer"
-            onClick={() => navigate("/dashboard")}
+            className="h-5 pl-6 w-auto object-contain drop-shadow-md cursor-pointer"
+            
           />
          
         </div>
@@ -258,22 +258,22 @@ const Quiz = () => {
               Your Score {score} out of {questions.length}
             </p>
 
-            <div className="bg-primary/10 border border-primary/30 p-4 rounded-lg shadow-inner">
+            <div className="bg-primary/10 border border-primary/30 p-2 rounded-lg shadow-inner">
               <p className="text-2xl font-semibold text-primary">
                 +{score * 10} Points ⭐
               </p>
             </div>
 
-            <div className="flex gap-4 pt-3">
-              <Button
+            <div >
+              {/* <Button
                 onClick={() => window.location.reload()}
                 className="flex-1 h-12 rounded-xl bg-primary text-white font-semibold shadow-md hover:bg-primary/90"
               >
                 Try Again
-              </Button>
+              </Button> */}
               <Button
                 variant="outline"
-                onClick={() => navigate("/dashboard")}
+                onClick={() => navigate("/")}
                 className="flex-1 h-12 rounded-xl border-primary text-primary font-semibold hover:bg-primary/10"
               >
                 Go Home
