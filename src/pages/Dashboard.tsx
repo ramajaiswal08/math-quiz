@@ -108,11 +108,11 @@ const Dashboard = () => {
           <div className="flex items-center gap-4">
             
             {/* ✅ CHUBB LOGO */}
-            <div className="w-20 h-20 rounded-full flex items-center justify-center shadow-md">
+            <div >
               <img
                 src={chubbLogo}
                 alt="CHUBB Logo"
-                className="w-19 h-19 object-contain rounded-full"
+                className="h-5 object-contain "
               />
             </div>
 
@@ -121,7 +121,7 @@ const Dashboard = () => {
                 Hi, {profile?.username || "USER"}! 👋
               </h1>
               <p className="text-muted-foreground text-lg mt-1">
-                Let's continue your math journey
+                Welcome to Chubb's Digit and Delights
               </p>
             </div>
           </div>
@@ -164,7 +164,7 @@ const Dashboard = () => {
             {/* LEFT CARD */}
             <div className="bg-primary p-8 text-white rounded-l-3xl w-80 flex flex-col justify-center">
               <h3 className="text-2xl font-bold mb-2">Choose the option</h3>
-              <p className="text-sm">Go to study in the year of your choice</p>
+              <p className="text-sm">Pick your path and start leveling up.</p>
             </div>
 
             {/* QUIZ LIST */}
